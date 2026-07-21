@@ -1,0 +1,6 @@
+@EnterpriseLeaveManagement.Api_HostAddress = http://localhost:5128
+
+GET {{EnterpriseLeaveManagement.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
