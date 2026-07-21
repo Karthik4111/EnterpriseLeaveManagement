@@ -19,7 +19,6 @@
     <Folder Include="Features\Dashboard\" />
     <Folder Include="Features\Employees\Queries\" />
     <Folder Include="Features\LeaveBalances\" />
-    <Folder Include="Features\LeaveRequests\" />
     <Folder Include="Features\Reports\" />
   </ItemGroup>
 

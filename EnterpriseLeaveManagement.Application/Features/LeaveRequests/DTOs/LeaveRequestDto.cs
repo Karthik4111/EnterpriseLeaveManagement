@@ -1,10 +1,11 @@
-﻿using EnterpriseLeaveManagement.Domain.Common;
-using EnterpriseLeaveManagement.Domain.Enums;
+﻿using EnterpriseLeaveManagement.Domain.Enums;
 
-namespace EnterpriseLeaveManagement.Domain.Entities;
+namespace EnterpriseLeaveManagement.Application.Features.LeaveRequests.DTOs;
 
-public class LeaveRequest : BaseEntity
+public class LeaveRequestDto
 {
+    public Guid Id { get; set; }
+
     public Guid EmployeeId { get; set; }
 
     public Guid LeaveTypeId { get; set; }
@@ -17,16 +18,11 @@ public class LeaveRequest : BaseEntity
 
     public string LeaveReason { get; set; } = string.Empty;
 
-    public LeaveRequestStatus Status { get; set; } = LeaveRequestStatus.Pending;
+    public LeaveRequestStatus Status { get; set; }
 
     public Guid? ApprovedBy { get; set; }
 
     public DateTime? ApprovedOn { get; set; }
 
     public string? ManagerComments { get; set; }
-
-    // Navigation Properties
-    public Employee Employee { get; set; } = null!;
-
-    public LeaveType LeaveType { get; set; } = null!;
 }
