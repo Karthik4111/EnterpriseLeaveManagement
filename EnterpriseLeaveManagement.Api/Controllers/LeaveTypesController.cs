@@ -23,8 +23,7 @@ public class LeaveTypesController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<LeaveTypeDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<PagedResult<LeaveTypeDto>>> GetAll(
-        [FromQuery] GetAllLeaveTypesQuery query)
+    public async Task<ActionResult<PagedResult<LeaveTypeDto>>> GetAll([FromQuery] GetAllLeaveTypesQuery query)
     {
         var result = await _mediator.Send(query);
         return Ok(result);

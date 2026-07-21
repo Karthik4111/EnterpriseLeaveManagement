@@ -49,9 +49,7 @@ public class LeaveRequestsController : ControllerBase
     }
 
     [HttpPut("{id:guid}/approve")]
-    public async Task<IActionResult> Approve(
-    Guid id,
-    [FromBody] ApproveLeaveCommand command)
+    public async Task<IActionResult> Approve(Guid id,[FromBody] ApproveLeaveCommand command)
     {
         command.LeaveRequestId = id;
 
@@ -61,9 +59,7 @@ public class LeaveRequestsController : ControllerBase
     }
 
     [HttpPut("{id:guid}/reject")]
-    public async Task<IActionResult> Reject(
-    Guid id,
-    [FromBody] RejectLeaveCommand command)
+    public async Task<IActionResult> Reject(Guid id,[FromBody] RejectLeaveCommand command)
     {
         command.LeaveRequestId = id;
 
