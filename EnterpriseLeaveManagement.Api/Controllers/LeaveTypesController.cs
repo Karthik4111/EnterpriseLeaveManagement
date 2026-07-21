@@ -6,6 +6,7 @@ using EnterpriseLeaveManagement.Application.Features.LeaveTypes.DTOs;
 using EnterpriseLeaveManagement.Application.Features.LeaveTypes.Queries.GetAllLeaveTypes;
 using EnterpriseLeaveManagement.Application.Features.LeaveTypes.Queries.GetLeaveTypeById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnterpriseLeaveManagement.Api.Controllers;
@@ -21,6 +22,7 @@ public class LeaveTypesController : ControllerBase
         _mediator = mediator;
     }
 
+    [Authorize]
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<LeaveTypeDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResult<LeaveTypeDto>>> GetAll([FromQuery] GetAllLeaveTypesQuery query)
@@ -29,6 +31,8 @@ public class LeaveTypesController : ControllerBase
         return Ok(result);
     }
 
+
+    [Authorize]
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(LeaveTypeDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -38,6 +42,8 @@ public class LeaveTypesController : ControllerBase
         return Ok(result);
     }
 
+
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -52,6 +58,9 @@ public class LeaveTypesController : ControllerBase
             id);
     }
 
+
+
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,6 +75,8 @@ public class LeaveTypesController : ControllerBase
         return NoContent();
     }
 
+
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

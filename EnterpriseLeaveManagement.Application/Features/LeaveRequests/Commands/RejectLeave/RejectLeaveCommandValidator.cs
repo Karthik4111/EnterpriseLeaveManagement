@@ -14,9 +14,6 @@ public class RejectLeaveCommandValidator : AbstractValidator<RejectLeaveCommand>
         RuleFor(x => x.LeaveRequestId)
             .NotEmpty();
 
-        RuleFor(x => x.ApprovedBy)
-            .NotEmpty();
-
         RuleFor(x => x.ManagerComments)
             .NotEmpty()
             .MaximumLength(1000);

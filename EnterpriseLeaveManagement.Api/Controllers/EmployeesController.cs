@@ -1,9 +1,11 @@
 ﻿using EnterpriseLeaveManagement.Application.Features.Employees.Commands.CreateEmployee;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnterpriseLeaveManagement.Api.Controllers;
 
+[Authorize(Roles = "Admin")]
 [ApiController]
 [Route("api/[controller]")]
 public class EmployeesController : ControllerBase

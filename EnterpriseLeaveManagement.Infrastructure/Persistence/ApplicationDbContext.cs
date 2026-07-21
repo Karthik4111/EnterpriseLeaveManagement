@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using EnterpriseLeaveManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using EnterpriseLeaveManagement.Application.Common.Interfaces;
+using EnterpriseLeaveManagement.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace EnterpriseLeaveManagement.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext, IApplicationDbContext
+public class ApplicationDbContext: IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
     {

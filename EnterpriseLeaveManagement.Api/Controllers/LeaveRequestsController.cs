@@ -5,6 +5,7 @@ using EnterpriseLeaveManagement.Application.Features.LeaveRequests.Commands.Reje
 using EnterpriseLeaveManagement.Application.Features.LeaveRequests.Queries.GetAllLeaveRequests;
 using EnterpriseLeaveManagement.Application.Features.LeaveRequests.Queries.GetLeaveRequestById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnterpriseLeaveManagement.API.Controllers;
@@ -34,6 +35,7 @@ public class LeaveRequestsController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize(Roles = "Employee")]
     [HttpPost]
     public async Task<IActionResult> Apply([FromBody] ApplyLeaveCommand command)
     {
@@ -41,6 +43,7 @@ public class LeaveRequestsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id }, id);
     }
 
+    [Authorize(Roles = "Employee")]
     [HttpPut("{id:guid}/cancel")]
     public async Task<IActionResult> Cancel(Guid id)
     {
@@ -48,6 +51,7 @@ public class LeaveRequestsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpPut("{id:guid}/approve")]
     public async Task<IActionResult> Approve(Guid id,[FromBody] ApproveLeaveCommand command)
     {
@@ -58,6 +62,7 @@ public class LeaveRequestsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Manager")]
     [HttpPut("{id:guid}/reject")]
     public async Task<IActionResult> Reject(Guid id,[FromBody] RejectLeaveCommand command)
     {

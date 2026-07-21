@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace EnterpriseLeaveManagement.Application.Features.LeaveRequests.Commands.ApproveLeave;
 
@@ -12,9 +7,6 @@ public class ApproveLeaveCommandValidator : AbstractValidator<ApproveLeaveComman
     public ApproveLeaveCommandValidator()
     {
         RuleFor(x => x.LeaveRequestId)
-            .NotEmpty();
-
-        RuleFor(x => x.ApprovedBy)
             .NotEmpty();
 
         RuleFor(x => x.ManagerComments)

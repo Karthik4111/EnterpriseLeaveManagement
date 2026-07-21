@@ -15,7 +15,6 @@
     <Folder Include="Common\Responses\" />
     <Folder Include="Common\Security\" />
     <Folder Include="Common\Validation\" />
-    <Folder Include="Features\Authentication\" />
     <Folder Include="Features\Dashboard\" />
     <Folder Include="Features\Employees\Queries\" />
     <Folder Include="Features\LeaveBalances\" />

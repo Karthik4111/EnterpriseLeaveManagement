@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using EnterpriseLeaveManagement.Application.Common.Exceptions;
+﻿using EnterpriseLeaveManagement.Application.Common.Exceptions;
 using EnterpriseLeaveManagement.Application.Common.Interfaces;
 using EnterpriseLeaveManagement.Domain.Enums;
 using MediatR;
@@ -15,13 +9,19 @@ namespace EnterpriseLeaveManagement.Application.Features.LeaveRequests.Commands.
 public class RejectLeaveCommandHandler : IRequestHandler<RejectLeaveCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
-    public RejectLeaveCommandHandler(IApplicationDbContext context)
+    public RejectLeaveCommandHandler(
+        IApplicationDbContext context,
+        ICurrentUserService currentUserService)
     {
         _context = context;
+        _currentUserService = currentUserService;
     }
 
-    public async Task Handle(RejectLeaveCommand request,CancellationToken cancellationToken)
+    public async Task Handle(
+        RejectLeaveCommand request,
+        CancellationToken cancellationToken)
     {
         var leaveRequest = await _context.LeaveRequests
             .FirstOrDefaultAsync(
@@ -34,8 +34,11 @@ public class RejectLeaveCommandHandler : IRequestHandler<RejectLeaveCommand>
         if (leaveRequest.Status != LeaveRequestStatus.Pending)
             throw new BadRequestException("Only pending leave requests can be rejected.");
 
+        if (_currentUserService.UserId is null)
+            throw new UnauthorizedAccessException("User is not authenticated.");
+
         leaveRequest.Status = LeaveRequestStatus.Rejected;
-        leaveRequest.ApprovedBy = request.ApprovedBy;
+        leaveRequest.ApprovedBy = _currentUserService.UserId;
         leaveRequest.ApprovedOn = DateTime.UtcNow;
         leaveRequest.ManagerComments = request.ManagerComments;
 

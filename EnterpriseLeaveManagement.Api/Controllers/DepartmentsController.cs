@@ -6,6 +6,7 @@ using EnterpriseLeaveManagement.Application.Features.Departments.Common;
 using EnterpriseLeaveManagement.Application.Features.Departments.Queries.GetAllDepartments;
 using EnterpriseLeaveManagement.Application.Features.Departments.Queries.GetDepartmentById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnterpriseLeaveManagement.Api.Controllers;
@@ -21,6 +22,7 @@ public class DepartmentsController : ControllerBase
         _mediator = mediator;
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateDepartmentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -31,6 +33,8 @@ public class DepartmentsController : ControllerBase
         return Ok(result);
     }
 
+
+    [Authorize]
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<DepartmentDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResult<DepartmentDto>>> GetAll([FromQuery] GetAllDepartmentsQuery query)
@@ -39,6 +43,7 @@ public class DepartmentsController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize]
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(DepartmentDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -52,6 +57,8 @@ public class DepartmentsController : ControllerBase
         return Ok(result);
     }
 
+
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(UpdateDepartmentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -69,6 +76,8 @@ public class DepartmentsController : ControllerBase
         return Ok(response);
     }
 
+
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(typeof(DeleteDepartmentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
