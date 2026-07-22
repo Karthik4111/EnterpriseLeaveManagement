@@ -4,6 +4,7 @@ using EnterpriseLeaveManagement.Domain.Entities;
 using EnterpriseLeaveManagement.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EnterpriseLeaveManagement.Application.Features.LeaveRequests.Commands.ApproveLeave;
 
@@ -13,13 +14,20 @@ public class ApproveLeaveCommandHandler : IRequestHandler<ApproveLeaveCommand>
     private readonly ICurrentUserService _currentUserService;
     private readonly IAuditService _auditService;
     private readonly IEmailService _emailService;
+    private readonly ILogger<ApproveLeaveCommandHandler> _logger;
 
-    public ApproveLeaveCommandHandler(IApplicationDbContext context,ICurrentUserService currentUserService,IAuditService auditService, IEmailService emailService)
+    public ApproveLeaveCommandHandler(
+        IApplicationDbContext context,
+        ICurrentUserService currentUserService,
+        IAuditService auditService,
+        IEmailService emailService,
+        ILogger<ApproveLeaveCommandHandler> logger)
     {
         _context = context;
         _currentUserService = currentUserService;
         _auditService = auditService;
         _emailService = emailService;
+        _logger = logger;
     }
 
     public async Task Handle(
@@ -89,7 +97,10 @@ public class ApproveLeaveCommandHandler : IRequestHandler<ApproveLeaveCommand>
             oldValues: "Status=Pending",
             newValues: "Status=Approved");
 
-        await _emailService.SendEmailAsync(
+        // Send email (do not fail approval if email fails)
+        try
+        {
+            await _emailService.SendEmailAsync(
                 employee.Email,
                 "Leave Request Approved",
                 $"""
@@ -100,12 +111,31 @@ public class ApproveLeaveCommandHandler : IRequestHandler<ApproveLeaveCommand>
                 <p>Your leave request has been <b>approved</b>.</p>
 
                 <table border="1" cellpadding="8">
-                    <tr><td><b>Start Date</b></td><td>{leaveRequest.StartDate:dd MMM yyyy}</td></tr>
-                    <tr><td><b>End Date</b></td><td>{leaveRequest.EndDate:dd MMM yyyy}</td></tr>
-                    <tr><td><b>Status</b></td><td>{leaveRequest.Status}</td></tr>
+                    <tr>
+                        <td><b>Start Date</b></td>
+                        <td>{leaveRequest.StartDate:dd MMM yyyy}</td>
+                    </tr>
+                    <tr>
+                        <td><b>End Date</b></td>
+                        <td>{leaveRequest.EndDate:dd MMM yyyy}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Status</b></td>
+                        <td>{leaveRequest.Status}</td>
+                    </tr>
                 </table>
+
+                <br/>
 
                 <p>Thank you.</p>
                 """);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to send approval email to {Email}.",
+                employee.Email);
+        }
     }
 }

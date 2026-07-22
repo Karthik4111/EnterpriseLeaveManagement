@@ -2,6 +2,7 @@ using EnterpriseLeaveManagement.Api.Middleware;
 using EnterpriseLeaveManagement.Application.Common.Configuration;
 using EnterpriseLeaveManagement.Application.DependencyInjection;
 using EnterpriseLeaveManagement.Infrastructure.DependencyInjection;
+using EnterpriseLeaveManagement.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -86,5 +87,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    await ApplicationDbInitializer.InitialiseAsync(scope.ServiceProvider);
+}
 
 app.Run();

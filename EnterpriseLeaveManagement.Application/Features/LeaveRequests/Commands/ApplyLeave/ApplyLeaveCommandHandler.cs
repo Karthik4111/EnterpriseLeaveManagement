@@ -3,6 +3,7 @@ using EnterpriseLeaveManagement.Domain.Entities;
 using EnterpriseLeaveManagement.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace EnterpriseLeaveManagement.Application.Features.LeaveRequests.Commands.ApplyLeave;
 
@@ -11,17 +12,23 @@ public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
     private readonly IApplicationDbContext _context;
     private readonly IAuditService _auditService;
     private readonly IEmailService _emailService;
+    private readonly ILogger<ApplyLeaveCommandHandler> _logger;
 
-    public ApplyLeaveCommandHandler(IApplicationDbContext context,IAuditService auditService, IEmailService emailService)
+    public ApplyLeaveCommandHandler(
+        IApplicationDbContext context,
+        IAuditService auditService,
+        IEmailService emailService,
+        ILogger<ApplyLeaveCommandHandler> logger)
     {
         _context = context;
         _auditService = auditService;
         _emailService = emailService;
+        _logger = logger;
     }
 
-    
-
-    public async Task<Guid> Handle(ApplyLeaveCommand request,CancellationToken cancellationToken)
+    public async Task<Guid> Handle(
+        ApplyLeaveCommand request,
+        CancellationToken cancellationToken)
     {
         // Calculate total leave days
         var numberOfDays =
@@ -67,7 +74,7 @@ public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
 
         await _context.LeaveRequests.AddAsync(leaveRequest, cancellationToken);
 
-        // Create notification using Identity User Id
+        // Create notification
         await _context.Notifications.AddAsync(new Notification
         {
             UserId = employee.UserId,
@@ -79,7 +86,10 @@ public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _emailService.SendEmailAsync(
+        // Send email (do not fail request if email fails)
+        try
+        {
+            await _emailService.SendEmailAsync(
                 employee.Email,
                 "Leave Request Submitted",
                 $"""
@@ -108,12 +118,20 @@ public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
 
                 <p>Thank you.</p>
                 """);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to send leave request email to {Email}.",
+                employee.Email);
+        }
 
         await _auditService.LogAsync(
-                action: "Leave Submitted",
-                entityName: nameof(LeaveRequest),
-                entityId: leaveRequest.Id,
-                newValues: $"EmployeeId={leaveRequest.EmployeeId}, Status={leaveRequest.Status}");
+            action: "Leave Submitted",
+            entityName: nameof(LeaveRequest),
+            entityId: leaveRequest.Id,
+            newValues: $"EmployeeId={leaveRequest.EmployeeId}, Status={leaveRequest.Status}");
 
         return leaveRequest.Id;
     }
