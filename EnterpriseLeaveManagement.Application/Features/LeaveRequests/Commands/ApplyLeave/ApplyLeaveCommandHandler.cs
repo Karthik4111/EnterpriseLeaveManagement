@@ -10,18 +10,18 @@ public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
 {
     private readonly IApplicationDbContext _context;
     private readonly IAuditService _auditService;
+    private readonly IEmailService _emailService;
 
-    public ApplyLeaveCommandHandler(IApplicationDbContext context,IAuditService auditService)
+    public ApplyLeaveCommandHandler(IApplicationDbContext context,IAuditService auditService, IEmailService emailService)
     {
         _context = context;
         _auditService = auditService;
+        _emailService = emailService;
     }
 
     
 
-    public async Task<Guid> Handle(
-        ApplyLeaveCommand request,
-        CancellationToken cancellationToken)
+    public async Task<Guid> Handle(ApplyLeaveCommand request,CancellationToken cancellationToken)
     {
         // Calculate total leave days
         var numberOfDays =
@@ -78,6 +78,36 @@ public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
         }, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _emailService.SendEmailAsync(
+                employee.Email,
+                "Leave Request Submitted",
+                $"""
+                <h2>Enterprise Leave Management</h2>
+
+                <p>Hello {employee.FirstName},</p>
+
+                <p>Your leave request has been submitted successfully.</p>
+
+                <table border="1" cellpadding="8">
+                    <tr>
+                        <td><b>Start Date</b></td>
+                        <td>{leaveRequest.StartDate:dd MMM yyyy}</td>
+                    </tr>
+                    <tr>
+                        <td><b>End Date</b></td>
+                        <td>{leaveRequest.EndDate:dd MMM yyyy}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Status</b></td>
+                        <td>{leaveRequest.Status}</td>
+                    </tr>
+                </table>
+
+                <br/>
+
+                <p>Thank you.</p>
+                """);
 
         await _auditService.LogAsync(
                 action: "Leave Submitted",
