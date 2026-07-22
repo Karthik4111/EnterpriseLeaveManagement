@@ -2,10 +2,9 @@ using EnterpriseLeaveManagement.Api.Middleware;
 using EnterpriseLeaveManagement.Application.Common.Configuration;
 using EnterpriseLeaveManagement.Application.DependencyInjection;
 using EnterpriseLeaveManagement.Infrastructure.DependencyInjection;
-using Serilog;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
-
+using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -22,12 +21,14 @@ builder.Services.AddApplication();
 
 // Register Infrastructure Layer
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.Configure<ApplicationSettings>(builder.Configuration.GetSection("ApplicationSettings"));
 
-//Register AutoMapper
+builder.Services.Configure<ApplicationSettings>(
+    builder.Configuration.GetSection("ApplicationSettings"));
+
+// Register AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// Add Controllers
+// Controllers
 builder.Services.AddControllers();
 
 // Swagger
@@ -41,15 +42,16 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1"
     });
 
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter JWT token.\n\nExample:\nBearer eyJhbGciOiJIUzI1NiIs..."
-    });
+    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme,
+        new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = JwtBearerDefaults.AuthenticationScheme,
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Enter ONLY the JWT token. Do NOT type 'Bearer'."
+        });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -59,7 +61,7 @@ builder.Services.AddSwaggerGen(options =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    Id = JwtBearerDefaults.AuthenticationScheme
                 }
             },
             Array.Empty<string>()
@@ -72,7 +74,6 @@ var app = builder.Build();
 // Global Exception Middleware
 app.UseExceptionHandling();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -82,10 +83,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
-
