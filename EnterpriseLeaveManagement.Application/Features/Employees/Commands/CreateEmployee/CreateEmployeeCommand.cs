@@ -27,5 +27,7 @@ public class CreateEmployeeCommand : IRequest<CreateEmployeeResponse>
 
     public Guid? ManagerId { get; set; }
 
+    public Guid UserId { get; set; }
+
     public string Designation { get; set; } = string.Empty;
 }

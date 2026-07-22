@@ -34,6 +34,10 @@ public class CreateEmployeeCommandValidator : AbstractValidator<CreateEmployeeCo
         RuleFor(x => x.DepartmentId)
             .NotEmpty();
 
+        RuleFor(x => x.UserId)
+            .NotEmpty()
+            .WithMessage("User Id is required.");
+
         RuleFor(x => x.Designation)
             .NotEmpty()
             .MaximumLength(100);

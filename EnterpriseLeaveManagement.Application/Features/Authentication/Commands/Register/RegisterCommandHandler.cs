@@ -11,6 +11,7 @@ namespace EnterpriseLeaveManagement.Application.Features.Authentication.Commands
 
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
 {
+
     private readonly IIdentityService _identityService;
 
     public RegisterCommandHandler(IIdentityService identityService)

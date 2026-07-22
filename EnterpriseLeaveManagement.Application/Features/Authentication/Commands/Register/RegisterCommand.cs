@@ -22,4 +22,16 @@ public class RegisterCommand : IRequest<string>
     public string ConfirmPassword { get; set; } = string.Empty;
 
     public string Role { get; set; } = "Employee";
+
+    public Guid DepartmentId { get; set; }
+
+    public string EmployeeCode { get; set; } = string.Empty;
+
+    public string PhoneNumber { get; set; } = string.Empty;
+
+    public DateTime? DateOfBirth { get; set; }
+
+    public DateTime DateOfJoining { get; set; }
+
+    public string Designation { get; set; } = string.Empty;
 }

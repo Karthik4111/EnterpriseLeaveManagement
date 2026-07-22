@@ -8,7 +8,7 @@ namespace EnterpriseLeaveManagement.Application.Common.Interfaces;
 
 public interface IIdentityService
 {
-    Task<(bool Succeeded, IEnumerable<string> Errors)> RegisterUserAsync(
+    Task<(bool Succeeded, Guid? UserId, IEnumerable<string> Errors)> RegisterUserAsync(
         string firstName,
         string lastName,
         string userName,
@@ -19,4 +19,6 @@ public interface IIdentityService
     Task<(bool Succeeded, string? Token, IEnumerable<string> Errors)> LoginAsync(
         string email,
         string password);
+
+    Task<bool> UserExistsAsync(Guid userId);
 }

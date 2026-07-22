@@ -22,7 +22,7 @@ public class IdentityService : IIdentityService
         _jwtTokenService = jwtTokenService;
     }
 
-    public async Task<(bool Succeeded, IEnumerable<string> Errors)> RegisterUserAsync(
+    public async Task<(bool Succeeded, Guid? UserId, IEnumerable<string> Errors)> RegisterUserAsync(
         string firstName,
         string lastName,
         string userName,
@@ -34,7 +34,7 @@ public class IdentityService : IIdentityService
 
         if (existingUser != null)
         {
-            return (false, new[] { "User already exists." });
+            return (false, null, new[] { "User already exists." });
         }
 
         var user = new ApplicationUser
@@ -49,7 +49,7 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            return (false, result.Errors.Select(e => e.Description));
+            return (false, null, result.Errors.Select(e => e.Description));
         }
 
         if (!await _roleManager.RoleExistsAsync(role))
@@ -62,7 +62,7 @@ public class IdentityService : IIdentityService
 
         await _userManager.AddToRoleAsync(user, role);
 
-        return (true, Enumerable.Empty<string>());
+        return (true, user.Id, Enumerable.Empty<string>());
     }
 
     public async Task<(bool Succeeded, string? Token, IEnumerable<string> Errors)> LoginAsync(
@@ -95,5 +95,10 @@ public class IdentityService : IIdentityService
             roles);
 
         return (true, token, Enumerable.Empty<string>());
+    }
+
+    public async Task<bool> UserExistsAsync(Guid userId)
+    {
+        return await _userManager.FindByIdAsync(userId.ToString()) != null;
     }
 }

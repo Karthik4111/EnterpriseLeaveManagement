@@ -22,9 +22,15 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .IsRequired()
             .HasMaxLength(20);
 
+        builder.Property(x => x.UserId)
+            .IsRequired();
+
         builder.Property(x => x.FirstName)
             .IsRequired()
             .HasMaxLength(100);
+
+        builder.HasIndex(x => x.UserId)
+            .IsUnique();
 
         builder.Property(x => x.LastName)
             .IsRequired()

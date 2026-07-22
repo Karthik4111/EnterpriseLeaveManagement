@@ -31,7 +31,8 @@ public class Employee : BaseEntity
     public Guid DepartmentId { get; set; }
     public Guid? ManagerId { get; set; }
 
-    
+    public Guid UserId { get; set; }
+
 
     //Navigation properties
     public Department Department { get; set; } = null!;

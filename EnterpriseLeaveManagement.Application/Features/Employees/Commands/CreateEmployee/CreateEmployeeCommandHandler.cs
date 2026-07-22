@@ -1,21 +1,27 @@
-﻿using EnterpriseLeaveManagement.Application.Common.Interfaces;
+﻿using EnterpriseLeaveManagement.Application.Common.Exceptions;
+using EnterpriseLeaveManagement.Application.Common.Interfaces;
 using EnterpriseLeaveManagement.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using EnterpriseLeaveManagement.Application.Common.Exceptions;
 
 namespace EnterpriseLeaveManagement.Application.Features.Employees.Commands.CreateEmployee;
 
-public class CreateEmployeeCommandHandler: IRequestHandler<CreateEmployeeCommand, CreateEmployeeResponse>
+public class CreateEmployeeCommandHandler : IRequestHandler<CreateEmployeeCommand, CreateEmployeeResponse>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IIdentityService _identityService;
 
-    public CreateEmployeeCommandHandler(IApplicationDbContext context)
+    public CreateEmployeeCommandHandler(
+        IApplicationDbContext context,
+        IIdentityService identityService)
     {
         _context = context;
+        _identityService = identityService;
     }
 
-    public async Task<CreateEmployeeResponse> Handle(CreateEmployeeCommand request,CancellationToken cancellationToken)
+    public async Task<CreateEmployeeResponse> Handle(
+        CreateEmployeeCommand request,
+        CancellationToken cancellationToken)
     {
         // Normalize input
         var employeeCode = request.EmployeeCode.Trim();
@@ -51,9 +57,26 @@ public class CreateEmployeeCommandHandler: IRequestHandler<CreateEmployeeCommand
             throw new BusinessException("Department does not exist.");
         }
 
+        // Business Validation - User Already Linked
+        var userAlreadyLinked = await _context.Employees.AnyAsync(
+            x => x.UserId == request.UserId,
+            cancellationToken);
+
+        if (userAlreadyLinked)
+        {
+            throw new BusinessException("User is already linked to another employee.");
+        }
+
+        // Business Validation - User Exists in Identity
+        if (!await _identityService.UserExistsAsync(request.UserId))
+        {
+            throw new BusinessException("User does not exist.");
+        }
+
         // Map Command to Domain Entity
         var employee = new Employee
         {
+            UserId = request.UserId,
             EmployeeCode = employeeCode,
             FirstName = request.FirstName.Trim(),
             LastName = request.LastName.Trim(),

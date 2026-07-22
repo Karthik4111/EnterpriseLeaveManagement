@@ -37,5 +37,22 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 
         RuleFor(x => x.Role)
             .NotEmpty();
+
+        RuleFor(x => x.DepartmentId)
+            .NotEmpty();
+
+        RuleFor(x => x.EmployeeCode)
+            .NotEmpty()
+            .MaximumLength(20);
+
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty();
+
+        RuleFor(x => x.DateOfJoining)
+            .NotEmpty();
+
+        RuleFor(x => x.Designation)
+            .NotEmpty()
+            .MaximumLength(100);
     }
 }
