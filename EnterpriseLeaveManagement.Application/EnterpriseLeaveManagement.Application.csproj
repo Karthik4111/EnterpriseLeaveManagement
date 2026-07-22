@@ -17,7 +17,9 @@
     <Folder Include="Common\Validation\" />
     <Folder Include="Features\Dashboard\DTOs\" />
     <Folder Include="Features\Employees\Queries\" />
+    <Folder Include="Features\LeaveAllocations\Validators\" />
     <Folder Include="Features\LeaveBalances\" />
+    <Folder Include="Features\Notifications\Commands\" />
     <Folder Include="Features\Reports\" />
   </ItemGroup>
 

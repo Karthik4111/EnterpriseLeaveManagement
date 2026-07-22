@@ -2,6 +2,7 @@
 using EnterpriseLeaveManagement.Domain.Entities;
 using EnterpriseLeaveManagement.Domain.Enums;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace EnterpriseLeaveManagement.Application.Features.LeaveRequests.Commands.ApplyLeave;
 
@@ -14,12 +15,41 @@ public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
         _context = context;
     }
 
-    public async Task<Guid> Handle(ApplyLeaveCommand request,CancellationToken cancellationToken)
+    public async Task<Guid> Handle(
+        ApplyLeaveCommand request,
+        CancellationToken cancellationToken)
     {
+        // Calculate total leave days
         var numberOfDays =
             request.EndDate.DayNumber -
             request.StartDate.DayNumber + 1;
 
+        // Validate leave balance
+        var leaveBalance = await _context.LeaveBalances
+            .FirstOrDefaultAsync(
+                x => x.EmployeeId == request.EmployeeId &&
+                     x.LeaveTypeId == request.LeaveTypeId &&
+                     !x.IsDeleted,
+                cancellationToken);
+
+        if (leaveBalance is null)
+            throw new Exception("Leave balance not found.");
+
+        if (leaveBalance.RemainingDays < numberOfDays)
+            throw new Exception(
+                $"Insufficient leave balance. Remaining balance: {leaveBalance.RemainingDays} day(s).");
+
+        // Get employee
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(
+                x => x.Id == request.EmployeeId &&
+                     !x.IsDeleted,
+                cancellationToken);
+
+        if (employee is null)
+            throw new Exception("Employee not found.");
+
+        // Create leave request
         var leaveRequest = new LeaveRequest
         {
             EmployeeId = request.EmployeeId,
@@ -31,7 +61,17 @@ public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
             Status = LeaveRequestStatus.Pending
         };
 
-        _context.LeaveRequests.Add(leaveRequest);
+        await _context.LeaveRequests.AddAsync(leaveRequest, cancellationToken);
+
+        // Create notification using Identity User Id
+        await _context.Notifications.AddAsync(new Notification
+        {
+            UserId = employee.UserId,
+            Title = "Leave Request Submitted",
+            Message = $"Your leave request from {request.StartDate:dd MMM yyyy} to {request.EndDate:dd MMM yyyy} has been submitted successfully.",
+            IsRead = false,
+            CreatedOn = DateTime.UtcNow
+        }, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 

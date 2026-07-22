@@ -29,11 +29,19 @@ public class Employee : BaseEntity
 
     // Foreign Keys
     public Guid DepartmentId { get; set; }
+
     public Guid? ManagerId { get; set; }
 
     public Guid UserId { get; set; }
 
-
-    //Navigation properties
+    // Navigation properties
     public Department Department { get; set; } = null!;
+
+    public Employee? Manager { get; set; }
+
+    public ICollection<Employee> Subordinates { get; set; } = new List<Employee>();
+
+    public ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest>();
+
+    public ICollection<LeaveAllocation> LeaveAllocations { get; set; } = new List<LeaveAllocation>();
 }

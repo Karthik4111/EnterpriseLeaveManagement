@@ -26,4 +26,8 @@ public class LeaveType : BaseEntity
     public bool RequiresApproval { get; set; }
 
     public bool IsActive { get; set; } = true;
+
+    public ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest>();
+
+    public ICollection<LeaveAllocation> LeaveAllocations { get; set; } = new List<LeaveAllocation>();
 }

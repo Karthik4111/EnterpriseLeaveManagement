@@ -1,5 +1,6 @@
 ﻿using EnterpriseLeaveManagement.Application.Common.Exceptions;
 using EnterpriseLeaveManagement.Application.Common.Interfaces;
+using EnterpriseLeaveManagement.Domain.Entities;
 using EnterpriseLeaveManagement.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,8 @@ public class ApproveLeaveCommandHandler : IRequestHandler<ApproveLeaveCommand>
     {
         var leaveRequest = await _context.LeaveRequests
             .FirstOrDefaultAsync(
-                x => x.Id == request.LeaveRequestId && !x.IsDeleted,
+                x => x.Id == request.LeaveRequestId &&
+                     !x.IsDeleted,
                 cancellationToken);
 
         if (leaveRequest is null)
@@ -52,10 +54,29 @@ public class ApproveLeaveCommandHandler : IRequestHandler<ApproveLeaveCommand>
         if (leaveBalance is null)
             throw new NotFoundException("Leave balance not found.");
 
-        if (leaveBalance.TotalDays - leaveBalance.UsedDays < leaveRequest.NumberOfDays)
+        if (leaveBalance.RemainingDays < leaveRequest.NumberOfDays)
             throw new BadRequestException("Insufficient leave balance.");
 
         leaveBalance.UsedDays += leaveRequest.NumberOfDays;
+
+        // Get employee to retrieve Identity UserId
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(
+                x => x.Id == leaveRequest.EmployeeId &&
+                     !x.IsDeleted,
+                cancellationToken);
+
+        if (employee is null)
+            throw new NotFoundException("Employee not found.");
+
+        _context.Notifications.Add(new Notification
+        {
+            UserId = employee.UserId, // Identity User Id
+            Title = "Leave Request Approved",
+            Message = $"Your leave request from {leaveRequest.StartDate:dd MMM yyyy} to {leaveRequest.EndDate:dd MMM yyyy} has been approved.",
+            IsRead = false,
+            CreatedOn = DateTime.UtcNow
+        });
 
         await _context.SaveChangesAsync(cancellationToken);
     }

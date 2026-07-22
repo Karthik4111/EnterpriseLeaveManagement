@@ -15,5 +15,9 @@ public interface IApplicationDbContext
 
     DbSet<LeaveRequest> LeaveRequests { get; }
 
+    DbSet<LeaveAllocation> LeaveAllocations { get; }
+
+    DbSet<Notification> Notifications { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

@@ -1,5 +1,6 @@
 ﻿using EnterpriseLeaveManagement.Application.Common.Exceptions;
 using EnterpriseLeaveManagement.Application.Common.Interfaces;
+using EnterpriseLeaveManagement.Domain.Entities;
 using EnterpriseLeaveManagement.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,8 @@ public class RejectLeaveCommandHandler : IRequestHandler<RejectLeaveCommand>
     {
         var leaveRequest = await _context.LeaveRequests
             .FirstOrDefaultAsync(
-                x => x.Id == request.LeaveRequestId && !x.IsDeleted,
+                x => x.Id == request.LeaveRequestId &&
+                     !x.IsDeleted,
                 cancellationToken);
 
         if (leaveRequest is null)
@@ -41,6 +43,25 @@ public class RejectLeaveCommandHandler : IRequestHandler<RejectLeaveCommand>
         leaveRequest.ApprovedBy = _currentUserService.UserId;
         leaveRequest.ApprovedOn = DateTime.UtcNow;
         leaveRequest.ManagerComments = request.ManagerComments;
+
+        // Get employee to retrieve Identity UserId
+        var employee = await _context.Employees
+            .FirstOrDefaultAsync(
+                x => x.Id == leaveRequest.EmployeeId &&
+                     !x.IsDeleted,
+                cancellationToken);
+
+        if (employee is null)
+            throw new NotFoundException("Employee not found.");
+
+        _context.Notifications.Add(new Notification
+        {
+            UserId = employee.UserId, // Identity User Id
+            Title = "Leave Request Rejected",
+            Message = $"Your leave request from {leaveRequest.StartDate:dd MMM yyyy} to {leaveRequest.EndDate:dd MMM yyyy} has been rejected.",
+            IsRead = false,
+            CreatedOn = DateTime.UtcNow
+        });
 
         await _context.SaveChangesAsync(cancellationToken);
     }

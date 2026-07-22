@@ -1,27 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EnterpriseLeaveManagement.Application.Common.Interfaces;
+﻿using EnterpriseLeaveManagement.Application.Common.Interfaces;
 using EnterpriseLeaveManagement.Application.Features.Dashboard.Responses;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace EnterpriseLeaveManagement.Application.Features.Dashboard.Queries.GetEmployeeDashboard;
 
-public class GetEmployeeDashboardQueryHandler: IRequestHandler<GetEmployeeDashboardQuery, EmployeeDashboardResponse>
+public class GetEmployeeDashboardQueryHandler
+    : IRequestHandler<GetEmployeeDashboardQuery, EmployeeDashboardResponse>
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
-    public GetEmployeeDashboardQueryHandler(IApplicationDbContext context,ICurrentUserService currentUserService)
+    public GetEmployeeDashboardQueryHandler(
+        IApplicationDbContext context,
+        ICurrentUserService currentUserService)
     {
         _context = context;
         _currentUserService = currentUserService;
     }
 
-    public async Task<EmployeeDashboardResponse> Handle(GetEmployeeDashboardQuery request,CancellationToken cancellationToken)
+    public async Task<EmployeeDashboardResponse> Handle(
+        GetEmployeeDashboardQuery request,
+        CancellationToken cancellationToken)
     {
         var today = DateOnly.FromDateTime(DateTime.Today);
 
@@ -34,6 +34,12 @@ public class GetEmployeeDashboardQueryHandler: IRequestHandler<GetEmployeeDashbo
         {
             throw new Exception("Employee profile not found.");
         }
+
+        var remainingLeaveBalance = await _context.LeaveBalances
+            .Where(x =>
+                x.EmployeeId == employee.Id &&
+                !x.IsDeleted)
+            .SumAsync(x => x.RemainingDays, cancellationToken);
 
         return new EmployeeDashboardResponse
         {
@@ -62,8 +68,7 @@ public class GetEmployeeDashboardQueryHandler: IRequestHandler<GetEmployeeDashbo
                     x.StartDate > today,
                 cancellationToken),
 
-            // Leave Allocation module will be implemented later
-            RemainingLeaveBalance = 0
+            RemainingLeaveBalance = remainingLeaveBalance
         };
     }
 }

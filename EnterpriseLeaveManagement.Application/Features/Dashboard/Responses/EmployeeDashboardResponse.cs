@@ -14,7 +14,7 @@ public class EmployeeDashboardResponse
 
     public int RejectedLeaveRequests { get; set; }
 
-    public int RemainingLeaveBalance { get; set; }
+    public decimal RemainingLeaveBalance { get; set; }
 
     public int UpcomingLeaves { get; set; }
 }
