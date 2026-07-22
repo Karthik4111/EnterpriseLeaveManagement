@@ -1,5 +1,5 @@
-﻿using System.Text;
-using EnterpriseLeaveManagement.Application.Common.Interfaces;
+﻿using EnterpriseLeaveManagement.Application.Common.Interfaces;
+using EnterpriseLeaveManagement.Application.Common.Services;
 using EnterpriseLeaveManagement.Infrastructure.Authentication;
 using EnterpriseLeaveManagement.Infrastructure.Identity;
 using EnterpriseLeaveManagement.Infrastructure.Persistence;
@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace EnterpriseLeaveManagement.Infrastructure.DependencyInjection;
 
@@ -87,6 +88,8 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
 
         services.AddScoped<IIdentityService, IdentityService>();
+
+        services.AddScoped<IAuditService, AuditService>();
 
         services.AddHttpContextAccessor();
 

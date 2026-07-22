@@ -11,13 +11,16 @@ public class ApproveLeaveCommandHandler : IRequestHandler<ApproveLeaveCommand>
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IAuditService _auditService;
 
     public ApproveLeaveCommandHandler(
         IApplicationDbContext context,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IAuditService auditService)
     {
         _context = context;
         _currentUserService = currentUserService;
+        _auditService = auditService;
     }
 
     public async Task Handle(
@@ -71,7 +74,7 @@ public class ApproveLeaveCommandHandler : IRequestHandler<ApproveLeaveCommand>
 
         _context.Notifications.Add(new Notification
         {
-            UserId = employee.UserId, // Identity User Id
+            UserId = employee.UserId,
             Title = "Leave Request Approved",
             Message = $"Your leave request from {leaveRequest.StartDate:dd MMM yyyy} to {leaveRequest.EndDate:dd MMM yyyy} has been approved.",
             IsRead = false,
@@ -79,5 +82,12 @@ public class ApproveLeaveCommandHandler : IRequestHandler<ApproveLeaveCommand>
         });
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _auditService.LogAsync(
+            action: "Leave Approved",
+            entityName: nameof(LeaveRequest),
+            entityId: leaveRequest.Id,
+            oldValues: "Status=Pending",
+            newValues: "Status=Approved");
     }
 }

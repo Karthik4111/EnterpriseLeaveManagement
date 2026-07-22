@@ -11,13 +11,16 @@ public class RejectLeaveCommandHandler : IRequestHandler<RejectLeaveCommand>
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IAuditService _auditService;
 
     public RejectLeaveCommandHandler(
         IApplicationDbContext context,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IAuditService auditService)
     {
         _context = context;
         _currentUserService = currentUserService;
+        _auditService = auditService;
     }
 
     public async Task Handle(
@@ -56,7 +59,7 @@ public class RejectLeaveCommandHandler : IRequestHandler<RejectLeaveCommand>
 
         _context.Notifications.Add(new Notification
         {
-            UserId = employee.UserId, // Identity User Id
+            UserId = employee.UserId,
             Title = "Leave Request Rejected",
             Message = $"Your leave request from {leaveRequest.StartDate:dd MMM yyyy} to {leaveRequest.EndDate:dd MMM yyyy} has been rejected.",
             IsRead = false,
@@ -64,5 +67,12 @@ public class RejectLeaveCommandHandler : IRequestHandler<RejectLeaveCommand>
         });
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _auditService.LogAsync(
+            action: "Leave Rejected",
+            entityName: nameof(LeaveRequest),
+            entityId: leaveRequest.Id,
+            oldValues: "Status=Pending",
+            newValues: "Status=Rejected");
     }
 }

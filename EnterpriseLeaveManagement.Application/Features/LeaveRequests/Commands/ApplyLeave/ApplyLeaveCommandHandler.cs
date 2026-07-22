@@ -9,11 +9,15 @@ namespace EnterpriseLeaveManagement.Application.Features.LeaveRequests.Commands.
 public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
-    public ApplyLeaveCommandHandler(IApplicationDbContext context)
+    public ApplyLeaveCommandHandler(IApplicationDbContext context,IAuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
+
+    
 
     public async Task<Guid> Handle(
         ApplyLeaveCommand request,
@@ -74,6 +78,12 @@ public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
         }, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _auditService.LogAsync(
+                action: "Leave Submitted",
+                entityName: nameof(LeaveRequest),
+                entityId: leaveRequest.Id,
+                newValues: $"EmployeeId={leaveRequest.EmployeeId}, Status={leaveRequest.Status}");
 
         return leaveRequest.Id;
     }
