@@ -15,7 +15,6 @@
     <Folder Include="Common\Responses\" />
     <Folder Include="Common\Security\" />
     <Folder Include="Common\Validation\" />
-    <Folder Include="Features\Dashboard\DTOs\" />
     <Folder Include="Features\Employees\Queries\" />
     <Folder Include="Features\LeaveAllocations\Validators\" />
     <Folder Include="Features\LeaveBalances\" />
