@@ -23,6 +23,8 @@ public class LeaveRequest : BaseEntity
 
     public DateTime? ApprovedOn { get; set; }
 
+    public string? AttachmentPath { get; set; }
+
     public string? ManagerComments { get; set; }
 
     // Navigation Properties

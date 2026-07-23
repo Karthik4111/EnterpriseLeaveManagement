@@ -22,4 +22,8 @@
     <ProjectReference Include="..\EnterpriseLeaveManagement.Infrastructure\EnterpriseLeaveManagement.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

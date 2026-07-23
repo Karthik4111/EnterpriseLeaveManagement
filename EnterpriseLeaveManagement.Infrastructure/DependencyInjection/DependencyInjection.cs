@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using EnterpriseLeaveManagement.Infrastructure.Email;
+using EnterpriseLeaveManagement.Application.Common.Interfaces;
+using EnterpriseLeaveManagement.Infrastructure.Services;
 
 namespace EnterpriseLeaveManagement.Infrastructure.DependencyInjection;
 
@@ -95,6 +97,8 @@ public static class DependencyInjection
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
 
         services.AddScoped<IEmailService, EmailService>();
+
+        services.AddScoped<IFileStorageService, FileStorageService>();
 
         services.AddHttpContextAccessor();
 

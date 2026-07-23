@@ -25,4 +25,6 @@ public class LeaveRequestDto
     public DateTime? ApprovedOn { get; set; }
 
     public string? ManagerComments { get; set; }
+
+    public string? AttachmentPath { get; set; }
 }

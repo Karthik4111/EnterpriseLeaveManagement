@@ -69,6 +69,7 @@ public class ApplyLeaveCommandHandler : IRequestHandler<ApplyLeaveCommand, Guid>
             EndDate = request.EndDate,
             NumberOfDays = numberOfDays,
             LeaveReason = request.LeaveReason,
+            AttachmentPath = request.AttachmentPath,
             Status = LeaveRequestStatus.Pending
         };
 

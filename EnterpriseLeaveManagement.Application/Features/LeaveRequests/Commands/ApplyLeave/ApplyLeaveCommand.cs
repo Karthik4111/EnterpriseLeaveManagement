@@ -19,4 +19,6 @@ public class ApplyLeaveCommand : IRequest<Guid>
     public DateOnly EndDate { get; set; }
 
     public string LeaveReason { get; set; } = string.Empty;
+
+    public string? AttachmentPath { get; set; }
 }
