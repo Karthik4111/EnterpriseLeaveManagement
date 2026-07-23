@@ -21,9 +21,7 @@ public class GetEmployeesOnLeaveQueryHandler: IRequestHandler<GetEmployeesOnLeav
         _context = context;
     }
 
-    public async Task<List<EmployeeOnLeaveDto>> Handle(
-        GetEmployeesOnLeaveQuery request,
-        CancellationToken cancellationToken)
+    public async Task<List<EmployeeOnLeaveDto>> Handle(GetEmployeesOnLeaveQuery request,CancellationToken cancellationToken)
     {
         var today = DateOnly.FromDateTime(DateTime.Today);
 

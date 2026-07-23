@@ -15,7 +15,9 @@
     <Folder Include="Common\Responses\" />
     <Folder Include="Common\Security\" />
     <Folder Include="Common\Validation\" />
-    <Folder Include="Features\Employees\Queries\" />
+    <Folder Include="Features\Employees\Commands\DeleteEmployee\" />
+    <Folder Include="Features\Employees\Commands\UpdateEmployee\" />
+    <Folder Include="Features\Employees\Queries\GetEmployeeById\" />
     <Folder Include="Features\LeaveAllocations\Validators\" />
     <Folder Include="Features\LeaveBalances\" />
     <Folder Include="Features\Notifications\Commands\" />
