@@ -1,6 +1,7 @@
 ﻿using EnterpriseLeaveManagement.Application.Features.Authentication.Commands.Login;
 using EnterpriseLeaveManagement.Application.Features.Authentication.Commands.Register;
 using EnterpriseLeaveManagement.Application.Features.Authentication.DTOs;
+using EnterpriseLeaveManagement.Application.Features.Authentication.Commands.RefreshToken;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,6 +29,14 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponseDto>> Login(
     LoginCommand command)
+    {
+        var result = await _mediator.Send(command);
+
+        return Ok(result);
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<LoginResponseDto>> RefreshToken(RefreshTokenCommand command)
     {
         var result = await _mediator.Send(command);
 

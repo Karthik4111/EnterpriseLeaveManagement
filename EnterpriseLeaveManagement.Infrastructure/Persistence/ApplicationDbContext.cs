@@ -28,6 +28,8 @@ public class ApplicationDbContext: IdentityDbContext<ApplicationUser, Applicatio
 
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -80,6 +82,29 @@ public class ApplicationDbContext: IdentityDbContext<ApplicationUser, Applicatio
                   .HasDefaultValue(false);
 
             entity.Property(x => x.CreatedOn)
+                  .IsRequired();
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.Token)
+                  .IsRequired();
+
+            entity.HasIndex(x => x.Token)
+                  .IsUnique();
+
+            entity.Property(x => x.Expires)
+                  .IsRequired();
+
+            entity.Property(x => x.Created)
+                  .IsRequired();
+
+            entity.Property(x => x.IsRevoked)
+                  .IsRequired();
+
+            entity.Property(x => x.UserId)
                   .IsRequired();
         });
     }

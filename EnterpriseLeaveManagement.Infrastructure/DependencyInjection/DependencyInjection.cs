@@ -1,8 +1,12 @@
 ﻿using EnterpriseLeaveManagement.Application.Common.Interfaces;
+using EnterpriseLeaveManagement.Application.Common.Interfaces;
 using EnterpriseLeaveManagement.Application.Common.Services;
+using EnterpriseLeaveManagement.Application.Interfaces;
 using EnterpriseLeaveManagement.Infrastructure.Authentication;
+using EnterpriseLeaveManagement.Infrastructure.Email;
 using EnterpriseLeaveManagement.Infrastructure.Identity;
 using EnterpriseLeaveManagement.Infrastructure.Persistence;
+using EnterpriseLeaveManagement.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using EnterpriseLeaveManagement.Infrastructure.Email;
-using EnterpriseLeaveManagement.Application.Common.Interfaces;
-using EnterpriseLeaveManagement.Infrastructure.Services;
 
 namespace EnterpriseLeaveManagement.Infrastructure.DependencyInjection;
 
@@ -103,6 +104,8 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
         return services;
     }

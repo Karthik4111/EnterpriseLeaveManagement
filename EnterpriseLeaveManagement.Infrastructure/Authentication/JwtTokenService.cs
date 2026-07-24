@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using EnterpriseLeaveManagement.Application.Common.Interfaces;
+﻿using EnterpriseLeaveManagement.Application.Common.Interfaces;
+using EnterpriseLeaveManagement.Application.Features.Authentication.DTOs;
 using EnterpriseLeaveManagement.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace EnterpriseLeaveManagement.Infrastructure.Authentication;
 
@@ -25,7 +25,7 @@ public class JwtTokenService : IJwtTokenService
         _userManager = userManager;
     }
 
-    public async Task<string> GenerateTokenAsync(Guid userId,string userName,string email,IList<string> roles)
+    public async Task<TokenResponseDto> GenerateTokenAsync(Guid userId,string userName,string email,IList<string> roles)
     {
         var claims = new List<Claim>
         {
@@ -51,12 +51,21 @@ public class JwtTokenService : IJwtTokenService
             SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: _jwtSettings.Issuer,
-            audience: _jwtSettings.Audience,
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
-            signingCredentials: credentials);
+                    issuer: _jwtSettings.Issuer,
+                    audience: _jwtSettings.Audience,
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
+                    signingCredentials: credentials);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+        var refreshToken = Convert.ToBase64String(
+            System.Security.Cryptography.RandomNumberGenerator.GetBytes(64));
+
+        return new TokenResponseDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
     }
 }

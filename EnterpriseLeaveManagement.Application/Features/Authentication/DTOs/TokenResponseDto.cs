@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace EnterpriseLeaveManagement.Application.Features.Authentication.DTOs;
 
-public class LoginResponseDto
+public class TokenResponseDto
 {
     public string AccessToken { get; set; } = string.Empty;
 
     public string RefreshToken { get; set; } = string.Empty;
-
-    public DateTime ExpiresAt { get; set; }
 }

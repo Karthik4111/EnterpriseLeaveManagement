@@ -36,8 +36,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
 
         return new LoginResponseDto
         {
-            AccessToken = result.Token!,
-            ExpiresAt = DateTime.UtcNow.AddHours(1)
+            AccessToken = result.Token!.AccessToken,
+            RefreshToken = result.Token.RefreshToken,
+            ExpiresAt = DateTime.UtcNow.AddMinutes(60)
         };
     }
 }
