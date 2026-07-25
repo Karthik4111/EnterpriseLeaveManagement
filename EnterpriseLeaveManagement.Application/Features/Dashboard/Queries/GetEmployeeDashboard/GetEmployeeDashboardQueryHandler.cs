@@ -36,10 +36,10 @@ public class GetEmployeeDashboardQueryHandler
         }
 
         var remainingLeaveBalance = await _context.LeaveBalances
-            .Where(x =>
-                x.EmployeeId == employee.Id &&
-                !x.IsDeleted)
-            .SumAsync(x => x.RemainingDays, cancellationToken);
+    .Where(x =>
+        x.EmployeeId == employee.Id &&
+        !x.IsDeleted)
+    .SumAsync(x => x.TotalDays - x.UsedDays, cancellationToken);
 
         return new EmployeeDashboardResponse
         {

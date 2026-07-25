@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using EnterpriseLeaveManagement.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+
+namespace EnterpriseLeaveManagement.UnitTests.Common;
+
+public static class TestDbContextFactory
+{
+    public static ApplicationDbContext Create()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+
+        return new ApplicationDbContext(options);
+    }
+}
