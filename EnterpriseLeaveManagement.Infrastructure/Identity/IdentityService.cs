@@ -28,14 +28,21 @@ public class IdentityService : IIdentityService
     }
 
     public async Task<(bool Succeeded, Guid? UserId, IEnumerable<string> Errors)> RegisterUserAsync(
-        string firstName,
-        string lastName,
-        string userName,
-        string email,
-        string password,
-        string role)
+    string firstName,
+    string lastName,
+    string userName,
+    string email,
+    string password,
+    string role)
     {
         var existingUser = await _userManager.FindByEmailAsync(email);
+
+        Console.WriteLine("==================================");
+        Console.WriteLine($"Checking Email : {email}");
+        Console.WriteLine(existingUser == null
+            ? "Existing User : NULL"
+            : $"Existing User : {existingUser.Email}");
+        Console.WriteLine("==================================");
 
         if (existingUser != null)
         {
@@ -52,8 +59,22 @@ public class IdentityService : IIdentityService
 
         var result = await _userManager.CreateAsync(user, password);
 
+        Console.WriteLine($"CreateAsync Success : {result.Succeeded}");
+
+        var savedUser = await _userManager.FindByEmailAsync(email);
+
+        Console.WriteLine(savedUser == null
+            ? "User Saved : NULL"
+            : $"User Saved : {savedUser.Email}");
+
         if (!result.Succeeded)
         {
+            Console.WriteLine("Errors:");
+            foreach (var error in result.Errors)
+            {
+                Console.WriteLine(error.Description);
+            }
+
             return (false, null, result.Errors.Select(e => e.Description));
         }
 
@@ -67,9 +88,11 @@ public class IdentityService : IIdentityService
 
         await _userManager.AddToRoleAsync(user, role);
 
+        Console.WriteLine($"Returning Success for {email}");
+        Console.WriteLine("==================================");
+
         return (true, user.Id, Enumerable.Empty<string>());
     }
-
     public async Task<(bool Succeeded, TokenResponseDto? Token, IEnumerable<string> Errors)> LoginAsync(
     string email,
     string password)

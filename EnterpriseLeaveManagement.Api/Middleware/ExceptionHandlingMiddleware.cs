@@ -1,5 +1,6 @@
 ﻿using EnterpriseLeaveManagement.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidationException = FluentValidation.ValidationException;
 
 namespace EnterpriseLeaveManagement.Api.Middleware;
 
@@ -34,9 +35,14 @@ public class ExceptionHandlingMiddleware
 
         switch (exception)
         {
-            case ValidationException:
+            case FluentValidationException:
                 statusCode = StatusCodes.Status400BadRequest;
                 title = "Validation Error";
+                break;
+
+            case BadRequestException:
+                statusCode = StatusCodes.Status400BadRequest;
+                title = "Bad Request";
                 break;
 
             case BusinessException:
@@ -47,6 +53,11 @@ public class ExceptionHandlingMiddleware
             case NotFoundException:
                 statusCode = StatusCodes.Status404NotFound;
                 title = "Resource Not Found";
+                break;
+
+            case UnauthorizedException:
+                statusCode = StatusCodes.Status401Unauthorized;
+                title = "Unauthorized";
                 break;
         }
 

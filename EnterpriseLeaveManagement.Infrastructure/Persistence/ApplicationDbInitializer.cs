@@ -14,7 +14,7 @@ public static class ApplicationDbInitializer
         var context = scope.ServiceProvider
             .GetRequiredService<ApplicationDbContext>();
 
-        await context.Database.MigrateAsync();
+        await context.Database.EnsureCreatedAsync();
 
         var roleManager = scope.ServiceProvider
             .GetRequiredService<RoleManager<ApplicationRole>>();
@@ -57,6 +57,15 @@ public static class ApplicationDbInitializer
         // =========================
         // Admin User
         // =========================
+
+        var users = userManager.Users.ToList();
+
+        Console.WriteLine($"Total Users: {users.Count}");
+
+        foreach (var user in users)
+        {
+            Console.WriteLine($"{user.Email} | {user.Id}");
+        }
 
         var admin = await userManager.FindByEmailAsync("admin@company.com");
 

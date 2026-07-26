@@ -30,7 +30,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
 
         if (!result.Succeeded)
         {
-            throw new BadRequestException(
+            throw new UnauthorizedException(
                 string.Join(", ", result.Errors));
         }
 

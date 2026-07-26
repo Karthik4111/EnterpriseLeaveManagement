@@ -6,9 +6,13 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
+
 namespace EnterpriseLeaveManagement.UnitTests.Authentication.Commands;
 
 public class LoginCommandHandlerTests
@@ -63,7 +67,7 @@ public class LoginCommandHandlerTests
 
 
     [Fact]
-    public async Task Handle_Should_Throw_BadRequestException_When_Credentials_Are_Invalid()
+    public async Task Handle_Should_Throw_UnauthorizedException_When_Credentials_Are_Invalid()
     {
         // Arrange
         var identityServiceMock = new Mock<IIdentityService>();
@@ -86,7 +90,7 @@ public class LoginCommandHandlerTests
         var handler = new LoginCommandHandler(identityServiceMock.Object);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<BadRequestException>(() =>
+        var exception = await Assert.ThrowsAsync<UnauthorizedException>(() =>
             handler.Handle(loginCommand, CancellationToken.None));
 
         Assert.Equal("Invalid email or password.", exception.Message);
