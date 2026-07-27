@@ -3,10 +3,18 @@ import {
     Toolbar,
     Typography,
     Avatar,
-    Box
+    Box,
+    IconButton,
 } from "@mui/material";
 
+import LogoutIcon from "@mui/icons-material/Logout";
+
+import { APP_NAME } from "@/constants/app";
+import { useAuth } from "@/context/AuthContext";
+
 function AppHeader() {
+    const { user, logout } = useAuth();
+
     return (
         <AppBar
             position="fixed"
@@ -15,30 +23,35 @@ function AppHeader() {
             }}
         >
             <Toolbar>
-
                 <Typography
                     variant="h6"
                     sx={{ flexGrow: 1 }}
                 >
-                    Enterprise Leave Management
+                    {APP_NAME}
                 </Typography>
 
                 <Box
                     sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 2,
-                        }}
-                    >
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                    }}
+                >
                     <Typography>
-                        Admin
+                        {user?.email ?? "Guest"}
                     </Typography>
 
                     <Avatar>
-                        A
+                        {user?.email?.[0]?.toUpperCase() ?? "A"}
                     </Avatar>
-                </Box>
 
+                    <IconButton
+                        color="inherit"
+                        onClick={logout}
+                    >
+                        <LogoutIcon />
+                    </IconButton>
+                </Box>
             </Toolbar>
         </AppBar>
     );

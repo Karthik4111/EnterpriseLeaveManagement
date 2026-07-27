@@ -10,7 +10,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import AppHeader from "@/components/layout/AppHeader";
 import MainContent from "@/components/layout/MainContent";
 
-const drawerWidth = 240;
+import { DRAWER_WIDTH } from "@/constants/app";
 
 interface Props {
     children: ReactNode;
@@ -26,10 +26,10 @@ function MainLayout({ children }: Props) {
             <Drawer
                 variant="permanent"
                 sx={{
-                    width: drawerWidth,
+                    width: DRAWER_WIDTH,
                     flexShrink: 0,
                     "& .MuiDrawer-paper": {
-                        width: drawerWidth,
+                        width: DRAWER_WIDTH,
                         boxSizing: "border-box",
                     },
                 }}

@@ -1,7 +1,7 @@
 import {
     BrowserRouter,
+    Route,
     Routes,
-    Route
 } from "react-router-dom";
 
 import LoginPage from "@/features/authentication/pages/LoginPage";
@@ -9,14 +9,14 @@ import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
+
+import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 
 function AppRoutes() {
     return (
         <BrowserRouter>
-
             <Routes>
-
                 <Route element={<PublicRoute />}>
                     <Route
                         path="/login"
@@ -32,12 +32,15 @@ function AppRoutes() {
                 </Route>
 
                 <Route
+                    path="/unauthorized"
+                    element={<UnauthorizedPage />}
+                />
+
+                <Route
                     path="*"
                     element={<NotFoundPage />}
                 />
-
             </Routes>
-
         </BrowserRouter>
     );
 }

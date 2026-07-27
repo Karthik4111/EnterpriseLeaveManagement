@@ -1,14 +1,37 @@
-import api from "@/api/axiosConfig";
-import type { LoginRequest, LoginResponse } from "../types/login";
+import api from "@/api/interceptors";
+import { API } from "@/constants/api";
+import type {
+    LoginRequest,
+    LoginResponse,
+    RefreshTokenRequest,
+    RefreshTokenResponse,
+    RegisterRequest,
+} from "@/types";
 
-export const login = async (
-    request: LoginRequest
-): Promise<LoginResponse> => {
+class AuthService {
+    async login(request: LoginRequest): Promise<LoginResponse> {
+        const { data } = await api.post<LoginResponse>(
+            API.Auth.Login,
+            request
+        );
 
-    const response = await api.post<LoginResponse>(
-        "/authentication/login",
-        request
-    );
+        return data;
+    }
 
-    return response.data;
-};
+    async register(request: RegisterRequest): Promise<void> {
+        await api.post(API.Auth.Register, request);
+    }
+
+    async refreshToken(
+        request: RefreshTokenRequest
+    ): Promise<RefreshTokenResponse> {
+        const { data } = await api.post<RefreshTokenResponse>(
+            API.Auth.RefreshToken,
+            request
+        );
+
+        return data;
+    }
+}
+
+export const authService = new AuthService();
