@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 
 import {
     Box,
@@ -16,6 +16,7 @@ import {
 
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import WorkspacesOutlinedIcon from "@mui/icons-material/WorkspacesOutlined";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -68,13 +69,9 @@ export default function LoginPage() {
                 password: data.password,
             });
 
-            login(
-                response.accessToken,
-                response.refreshToken
-            );
+            login(response.accessToken, response.refreshToken);
 
             showSuccess("Login successful.");
-
             navigate(ROUTES.DASHBOARD);
         } catch (error) {
             console.error("Login failed:", error);
@@ -87,117 +84,321 @@ export default function LoginPage() {
             sx={{
                 minHeight: "100vh",
                 display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                bgcolor: "background.default",
-                p: 2,
+                background:
+                    "linear-gradient(135deg, #0F172A 0%, #1E3A5F 50%, #1E1B4B 100%)",
+                position: "relative",
+                overflow: "hidden",
             }}
         >
-            <Card
-                elevation={6}
+            {/* Decorative circles */}
+            <Box
                 sx={{
-                    width: 420,
-                    borderRadius: 3,
+                    position: "absolute",
+                    top: -120,
+                    left: -120,
+                    width: 400,
+                    height: 400,
+                    borderRadius: "50%",
+                    background: "rgba(37,99,235,0.12)",
+                    pointerEvents: "none",
+                }}
+            />
+            <Box
+                sx={{
+                    position: "absolute",
+                    bottom: -100,
+                    right: -100,
+                    width: 350,
+                    height: 350,
+                    borderRadius: "50%",
+                    background: "rgba(99,102,241,0.10)",
+                    pointerEvents: "none",
+                }}
+            />
+
+            {/* Left branding panel — desktop only */}
+            <Box
+                sx={{
+                    display: { xs: "none", md: "flex" },
+                    flex: 1,
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                    px: 8,
+                    position: "relative",
+                    zIndex: 1,
                 }}
             >
-                <CardContent sx={{ p: 4 }}>
-                    <Typography
-                        variant="h4"
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                        mb: 5,
+                    }}
+                >
+                    <Box
                         sx={{
+                            width: 44,
+                            height: 44,
+                            borderRadius: "14px",
+                            bgcolor: "#2563EB",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            boxShadow: "0 4px 16px rgba(37,99,235,0.4)",
+                        }}
+                    >
+                        <WorkspacesOutlinedIcon
+                            sx={{ color: "#fff", fontSize: 22 }}
+                        />
+                    </Box>
+                    <Typography
+                        sx={{
+                            fontSize: "1.125rem",
                             fontWeight: 700,
-                            textAlign: "center",
-                            mb: 1,
+                            color: "#F9FAFB",
+                            letterSpacing: "-0.01em",
                         }}
                     >
-                        Welcome Back
+                        Enterprise Leave
                     </Typography>
+                </Box>
 
-                    <Typography
-                        variant="body2"
+                <Typography
+                    sx={{
+                        fontSize: "2.5rem",
+                        fontWeight: 700,
+                        color: "#F9FAFB",
+                        lineHeight: 1.2,
+                        letterSpacing: "-0.02em",
+                        mb: 2,
+                    }}
+                >
+                    HR Management
+                    <br />
+                    made simple.
+                </Typography>
+
+                <Typography
+                    sx={{
+                        fontSize: "1rem",
+                        color: "rgba(249,250,251,0.6)",
+                        lineHeight: 1.6,
+                        maxWidth: 380,
+                    }}
+                >
+                    Manage employee leaves, approvals, and HR operations
+                    from one powerful platform.
+                </Typography>
+            </Box>
+
+            {/* Right login card panel */}
+            <Box
+                sx={{
+                    display: "flex",
+                    flex: { xs: 1, md: "0 0 480px" },
+                    alignItems: "center",
+                    justifyContent: "center",
+                    p: { xs: 2, sm: 4 },
+                    position: "relative",
+                    zIndex: 1,
+                    bgcolor: { md: "rgba(255,255,255,0.03)" },
+                    backdropFilter: { md: "blur(20px)" },
+                    borderLeft: { md: "1px solid rgba(255,255,255,0.08)" },
+                }}
+            >
+                <Card
+                    elevation={0}
+                    sx={{
+                        width: "100%",
+                        maxWidth: 420,
+                        borderRadius: "20px",
+                        bgcolor: "#FFFFFF",
+                        border: "1px solid #E5E7EB",
+                        boxShadow:
+                            "0 20px 60px rgba(0,0,0,0.35), 0 8px 20px rgba(0,0,0,0.2)",
+                    }}
+                >
+                    <CardContent
                         sx={{
-                            color: "text.secondary",
-                            textAlign: "center",
-                            mb: 4,
+                            p: { xs: 3, sm: 4 },
+                            "&:last-child": { pb: { xs: 3, sm: 4 } },
                         }}
                     >
-                        Sign in to continue
-                    </Typography>
-
-                    {import.meta.env.DEV && (
-                        <Typography
-                            variant="caption"
+                        {/* Mobile logo */}
+                        <Box
                             sx={{
-                                display: "block",
-                                mb: 2,
-                                color: "text.secondary",
-                                textAlign: "center",
+                                display: { xs: "flex", md: "none" },
+                                alignItems: "center",
+                                gap: 1.25,
+                                mb: 3,
+                                justifyContent: "center",
                             }}
                         >
-                            Dev users: admin@company.com / Admin@123
-                        </Typography>
-                    )}
-
-                    <Box
-                        component="form"
-                        onSubmit={handleSubmit(onSubmit)}
-                    >
-                        <Stack spacing={3}>
-                            <TextField
-                                label="Email"
-                                placeholder="Enter your email"
-                                {...register("email")}
-                                error={!!errors.email}
-                                helperText={errors.email?.message}
-                            />
-
-                            <TextField
-                                label="Password"
-                                placeholder="Enter your password"
-                                type={showPassword ? "text" : "password"}
-                                {...register("password")}
-                                error={!!errors.password}
-                                helperText={errors.password?.message}
-                                slotProps={{
-                                    input: {
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    edge="end"
-                                                    onClick={() =>
-                                                        setShowPassword((prev) => !prev)
-                                                    }
-                                                >
-                                                    {showPassword ? (
-                                                        <VisibilityOff />
-                                                    ) : (
-                                                        <Visibility />
-                                                    )}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
-                                    },
+                            <Box
+                                sx={{
+                                    width: 36,
+                                    height: 36,
+                                    borderRadius: "10px",
+                                    bgcolor: "#2563EB",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                 }}
-                            />
-
-                            <FormControlLabel
-                                control={<Checkbox />}
-                                label="Remember Me"
-                            />
-
-                            <Button
-                                type="submit"
-                                fullWidth
-                                size="large"
-                                disabled={isSubmitting}
                             >
-                                {isSubmitting
-                                    ? "Signing In..."
-                                    : "Sign In"}
-                            </Button>
-                        </Stack>
-                    </Box>
-                </CardContent>
-            </Card>
+                                <WorkspacesOutlinedIcon
+                                    sx={{ color: "#fff", fontSize: 18 }}
+                                />
+                            </Box>
+                            <Typography
+                                sx={{
+                                    fontSize: "1rem",
+                                    fontWeight: 700,
+                                    color: "#111827",
+                                }}
+                            >
+                                Enterprise Leave
+                            </Typography>
+                        </Box>
+
+                        <Typography
+                            variant="h5"
+                            sx={{ fontWeight: 700, color: "#111827", mb: 0.75 }}
+                        >
+                            Welcome back
+                        </Typography>
+
+                        <Typography
+                            sx={{
+                                fontSize: "0.9375rem",
+                                color: "#6B7280",
+                                mb: 3.5,
+                            }}
+                        >
+                            Sign in to your account to continue
+                        </Typography>
+
+                        {import.meta.env.DEV && (
+                            <Box
+                                sx={{
+                                    mb: 3,
+                                    px: 2,
+                                    py: 1.25,
+                                    borderRadius: "10px",
+                                    bgcolor: "#EFF6FF",
+                                    border: "1px solid #BFDBFE",
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        fontSize: "0.8125rem",
+                                        color: "#1D4ED8",
+                                        fontWeight: 500,
+                                    }}
+                                >
+                                    Dev: admin@company.com / Admin@123
+                                </Typography>
+                            </Box>
+                        )}
+
+                        <Box
+                            component="form"
+                            onSubmit={handleSubmit(onSubmit)}
+                        >
+                            <Stack spacing={2.5}>
+                                <TextField
+                                    label="Email address"
+                                    placeholder="you@company.com"
+                                    {...register("email")}
+                                    error={!!errors.email}
+                                    helperText={errors.email?.message}
+                                    autoComplete="email"
+                                />
+
+                                <TextField
+                                    label="Password"
+                                    placeholder="Enter your password"
+                                    type={
+                                        showPassword ? "text" : "password"
+                                    }
+                                    {...register("password")}
+                                    error={!!errors.password}
+                                    helperText={errors.password?.message}
+                                    autoComplete="current-password"
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        edge="end"
+                                                        onClick={() =>
+                                                            setShowPassword(
+                                                                (p) => !p
+                                                            )
+                                                        }
+                                                        sx={{
+                                                            color: "#9CA3AF",
+                                                        }}
+                                                    >
+                                                        {showPassword ? (
+                                                            <VisibilityOff fontSize="small" />
+                                                        ) : (
+                                                            <Visibility fontSize="small" />
+                                                        )}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        },
+                                    }}
+                                />
+
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            size="small"
+                                            sx={{ py: 0 }}
+                                        />
+                                    }
+                                    label={
+                                        <Typography
+                                            sx={{
+                                                fontSize: "0.875rem",
+                                                color: "#6B7280",
+                                            }}
+                                        >
+                                            Remember me
+                                        </Typography>
+                                    }
+                                />
+
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    size="large"
+                                    disabled={isSubmitting}
+                                    sx={{
+                                        py: 1.375,
+                                        fontSize: "0.9375rem",
+                                        fontWeight: 600,
+                                        borderRadius: "10px",
+                                        boxShadow:
+                                            "0 4px 12px rgba(37,99,235,0.3)",
+                                        "&:hover": {
+                                            boxShadow:
+                                                "0 6px 16px rgba(37,99,235,0.4)",
+                                        },
+                                    }}
+                                >
+                                    {isSubmitting
+                                        ? "Signing in..."
+                                        : "Sign in"}
+                                </Button>
+                            </Stack>
+                        </Box>
+                    </CardContent>
+                </Card>
+            </Box>
         </Box>
     );
 }

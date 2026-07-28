@@ -4,28 +4,51 @@ const palette: PaletteOptions = {
     mode: "light",
 
     primary: {
-        main: "#1976d2",
+        main: "#2563EB",
+        light: "#3B82F6",
+        dark: "#1D4ED8",
+        contrastText: "#ffffff",
     },
 
     secondary: {
-        main: "#9c27b0",
+        main: "#6366F1",
+        light: "#818CF8",
+        dark: "#4F46E5",
+        contrastText: "#ffffff",
     },
 
     success: {
-        main: "#2e7d32",
+        main: "#22C55E",
+        light: "#4ADE80",
+        dark: "#16A34A",
+        contrastText: "#ffffff",
     },
 
     warning: {
-        main: "#ed6c02",
+        main: "#F59E0B",
+        light: "#FCD34D",
+        dark: "#D97706",
+        contrastText: "#ffffff",
     },
 
     error: {
-        main: "#d32f2f",
+        main: "#EF4444",
+        light: "#FCA5A5",
+        dark: "#DC2626",
+        contrastText: "#ffffff",
     },
 
     background: {
-        default: "#f5f7fb",
-        paper: "#ffffff",
+        default: "#F5F7FB",
+        paper: "#FFFFFF",
+    },
+
+    divider: "#E5E7EB",
+
+    text: {
+        primary: "#111827",
+        secondary: "#6B7280",
+        disabled: "#9CA3AF",
     },
 };
 

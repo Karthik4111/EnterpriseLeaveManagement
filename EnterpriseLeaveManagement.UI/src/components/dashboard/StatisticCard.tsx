@@ -1,11 +1,6 @@
 import type { ReactNode } from "react";
-
-import {
-    Box,
-    Card,
-    CardContent,
-    Typography,
-} from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 
 interface StatisticCardProps {
     title: string;
@@ -22,40 +17,49 @@ export default function StatisticCard({
 }: StatisticCardProps) {
     return (
         <Card
-            elevation={2}
+            elevation={0}
             sx={{
                 height: "100%",
-                transition: "0.3s",
-                cursor: "pointer",
+                cursor: "default",
+                transition: "all 0.2s ease",
                 "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: 6,
+                    transform: "translateY(-3px)",
+                    boxShadow:
+                        "0px 12px 20px -5px rgba(0,0,0,0.08), 0px 4px 8px -2px rgba(0,0,0,0.04)",
                 },
             }}
         >
-            <CardContent>
+            <CardContent sx={{ p: 3, "&:last-child": { pb: 3 } }}>
                 <Box
                     sx={{
                         display: "flex",
+                        alignItems: "flex-start",
                         justifyContent: "space-between",
-                        alignItems: "center",
+                        gap: 2,
                     }}
                 >
-                    <Box>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography
-                            variant="body2"
                             sx={{
-                                color: "text.secondary",
+                                fontSize: "0.6875rem",
+                                fontWeight: 600,
+                                color: "#6B7280",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.07em",
+                                mb: 1.5,
+                                whiteSpace: "nowrap",
                             }}
                         >
                             {title}
                         </Typography>
 
                         <Typography
-                            variant="h4"
                             sx={{
-                                mt: 2,
+                                fontSize: "1.875rem",
                                 fontWeight: 700,
+                                color: "#111827",
+                                lineHeight: 1,
+                                letterSpacing: "-0.02em",
                             }}
                         >
                             {value}
@@ -64,14 +68,16 @@ export default function StatisticCard({
 
                     <Box
                         sx={{
-                            width: 56,
-                            height: 56,
-                            borderRadius: "50%",
-                            backgroundColor: color,
+                            width: 48,
+                            height: 48,
+                            borderRadius: "14px",
+                            bgcolor: alpha(color, 0.12),
                             display: "flex",
-                            justifyContent: "center",
                             alignItems: "center",
-                            color: "#fff",
+                            justifyContent: "center",
+                            color: color,
+                            flexShrink: 0,
+                            "& .MuiSvgIcon-root": { fontSize: 22 },
                         }}
                     >
                         {icon}
