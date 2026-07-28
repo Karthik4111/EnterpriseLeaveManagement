@@ -19,7 +19,7 @@ public class EmployeesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateEmployee(CreateEmployeeCommand command)
+    public async Task<IActionResult> CreateEmployee([FromBody] CreateEmployeeCommand command)
     {
         var response = await _mediator.Send(command);
 

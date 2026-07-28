@@ -1,24 +1,56 @@
 import { createTheme } from "@mui/material/styles";
+import palette from "./palette";
 
 const theme = createTheme({
-    palette: {
-        primary: {
-            main: "#1976d2",
-        },
-        secondary: {
-            main: "#9c27b0",
-        },
-        background: {
-            default: "#f5f5f5",
-        },
+    palette,
+
+    shape: {
+        borderRadius: 10,
     },
 
     typography: {
-        fontFamily: "Roboto, Arial, sans-serif",
+        fontFamily:
+            "'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif",
+
+        h4: {
+            fontWeight: 700,
+        },
+
+        h5: {
+            fontWeight: 600,
+        },
+
+        h6: {
+            fontWeight: 600,
+        },
+
+        button: {
+            textTransform: "none",
+            fontWeight: 600,
+        },
     },
 
-    shape: {
-        borderRadius: 8,
+    components: {
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    borderRadius: 12,
+                },
+            },
+        },
+
+        MuiButton: {
+            defaultProps: {
+                variant: "contained",
+            },
+        },
+
+        MuiTextField: {
+            defaultProps: {
+                fullWidth: true,
+                size: "small",
+            },
+        },
     },
 });
 

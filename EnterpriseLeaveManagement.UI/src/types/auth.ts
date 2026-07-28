@@ -1,27 +1,24 @@
-export interface AuthUser {
-    accessToken: string;
-    refreshToken: string;
-    expiresAt: string;
-}
-
 export interface LoginRequest {
     email: string;
     password: string;
 }
 
-export interface LoginResponse extends AuthUser {}
-
-export interface RegisterRequest {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-}
-
-export interface RefreshTokenRequest {
+export interface LoginResponse {
     accessToken: string;
     refreshToken: string;
+    expiresAt: string;
 }
 
-export interface RefreshTokenResponse extends AuthUser {}
+export interface AuthUser {
+    id: string;
+    fullName: string;
+    email: string;
+    role: string;
+}
+
+export interface AuthState {
+    isAuthenticated: boolean;
+    accessToken: string | null;
+    refreshToken: string | null;
+    user: AuthUser | null;
+}

@@ -1,49 +1,52 @@
-import {
-    Box,
-    Drawer,
-    Toolbar
-} from "@mui/material";
+import { Box, Toolbar } from "@mui/material";
+import { Outlet } from "react-router-dom";
+import { useState } from "react";
 
-import type { ReactNode } from "react";
+import Navbar from "@/components/layout/Navbar/Navbar";
+import Sidebar from "@/components/layout/Sidebar/Sidebar";
+import Footer from "@/components/layout/Footer/Footer";
 
-import Sidebar from "@/components/layout/Sidebar";
-import AppHeader from "@/components/layout/AppHeader";
-import MainContent from "@/components/layout/MainContent";
-
-import { DRAWER_WIDTH } from "@/constants/app";
-
-interface Props {
-    children: ReactNode;
-}
-
-function MainLayout({ children }: Props) {
+export default function MainLayout() {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
         <Box sx={{ display: "flex" }}>
+            <Navbar
+                onMenuClick={() =>
+                    setSidebarOpen(true)
+                }
+            />
 
-            <AppHeader />
+            <Sidebar
+                open={sidebarOpen}
+                onClose={() =>
+                    setSidebarOpen(false)
+                }
+            />
 
-            <Drawer
-                variant="permanent"
+            <Box
+                component="main"
                 sx={{
-                    width: DRAWER_WIDTH,
-                    flexShrink: 0,
-                    "& .MuiDrawer-paper": {
-                        width: DRAWER_WIDTH,
-                        boxSizing: "border-box",
-                    },
+                    flexGrow: 1,
+                    minHeight: "100vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    bgcolor: "background.default",
                 }}
             >
                 <Toolbar />
-                <Sidebar />
-            </Drawer>
 
-            <MainContent>
-                {children}
-            </MainContent>
+                <Box
+                    sx={{
+                        flexGrow: 1,
+                        p: 3,
+                    }}
+                >
+                    <Outlet />
+                </Box>
 
+                <Footer />
+            </Box>
         </Box>
     );
 }
-
-export default MainLayout;

@@ -14,7 +14,7 @@ public static class ApplicationDbInitializer
         var context = scope.ServiceProvider
             .GetRequiredService<ApplicationDbContext>();
 
-        await context.Database.EnsureCreatedAsync();
+        await context.Database.MigrateAsync();
 
         var roleManager = scope.ServiceProvider
             .GetRequiredService<RoleManager<ApplicationRole>>();

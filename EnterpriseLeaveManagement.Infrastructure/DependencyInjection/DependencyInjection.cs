@@ -1,5 +1,4 @@
 ﻿using EnterpriseLeaveManagement.Application.Common.Interfaces;
-using EnterpriseLeaveManagement.Application.Common.Interfaces;
 using EnterpriseLeaveManagement.Application.Common.Services;
 using EnterpriseLeaveManagement.Application.Interfaces;
 using EnterpriseLeaveManagement.Infrastructure.Authentication;
@@ -41,6 +40,10 @@ public static class DependencyInjection
                 options.Password.RequiredLength = 8;
 
                 options.User.RequireUniqueEmail = true;
+
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+                options.Lockout.MaxFailedAccessAttempts = 5;
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();

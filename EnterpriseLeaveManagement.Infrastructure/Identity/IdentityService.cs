@@ -97,6 +97,13 @@ public class IdentityService : IIdentityService
     string email,
     string password)
     {
+        email = email.Trim();
+
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            return (false, null, new[] { "Invalid email or password." });
+        }
+
         var user = await _userManager.FindByEmailAsync(email);
 
         if (user is null)
@@ -107,7 +114,7 @@ public class IdentityService : IIdentityService
         var result = await _signInManager.CheckPasswordSignInAsync(
             user,
             password,
-            lockoutOnFailure: false);
+            lockoutOnFailure: true);
 
         if (!result.Succeeded)
         {

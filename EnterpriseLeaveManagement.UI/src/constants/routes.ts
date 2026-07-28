@@ -1,13 +1,27 @@
 export const ROUTES = {
-    Dashboard: "/",
-    Login: "/login",
+    ROOT: "/",
 
-    Employees: "/employees",
-    Departments: "/departments",
+    LOGIN: "/login",
 
-    LeaveTypes: "/leave-types",
-    LeaveAllocations: "/leave-allocations",
-    LeaveRequests: "/leave-requests",
+    DASHBOARD: "/dashboard",
 
-    Settings: "/settings",
-};
+    EMPLOYEES: "/employees",
+    CREATE_EMPLOYEE: "/employees/create",
+    EDIT_EMPLOYEE: "/employees/:id/edit",
+    EMPLOYEE_DETAILS: "/employees/:id",
+
+    DEPARTMENTS: "/departments",
+    CREATE_DEPARTMENT: "/departments/create",
+    EDIT_DEPARTMENT: "/departments/:id/edit",
+
+    LEAVE_REQUEST: "/leave/request",
+    MY_LEAVES: "/leave/my-leaves",
+    LEAVE_APPROVALS: "/leave/approvals",
+    LEAVE_BALANCE: "/leave/balance",
+
+    PROFILE: "/profile",
+
+    UNAUTHORIZED: "/unauthorized",
+
+    NOT_FOUND: "*",
+} as const;

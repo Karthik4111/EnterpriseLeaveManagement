@@ -8,11 +8,16 @@ public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+    private readonly IHostEnvironment _environment;
 
-    public ExceptionHandlingMiddleware(RequestDelegate next,ILogger<ExceptionHandlingMiddleware> logger)
+    public ExceptionHandlingMiddleware(
+        RequestDelegate next,
+        ILogger<ExceptionHandlingMiddleware> logger,
+        IHostEnvironment environment)
     {
         _next = next;
         _logger = logger;
+        _environment = environment;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -23,12 +28,29 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex,"Unhandled exception occurred while processing {Path}",context.Request.Path);
-            await HandleExceptionAsync(context, ex);
+            if (ex is UnauthorizedException)
+            {
+                _logger.LogWarning(
+                    "Unauthorized request for {Path}: {Message}",
+                    context.Request.Path,
+                    ex.Message);
+            }
+            else
+            {
+                _logger.LogError(
+                    ex,
+                    "Unhandled exception occurred while processing {Path}",
+                    context.Request.Path);
+            }
+
+            await HandleExceptionAsync(context, ex, _environment.IsDevelopment());
         }
     }
 
-    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static async Task HandleExceptionAsync(
+        HttpContext context,
+        Exception exception,
+        bool includeDetails)
     {
         var statusCode = StatusCodes.Status500InternalServerError;
         var title = "Internal Server Error";
@@ -68,7 +90,9 @@ public class ExceptionHandlingMiddleware
         {
             Status = statusCode,
             Title = title,
-            Detail = exception.Message,
+            Detail = statusCode == StatusCodes.Status500InternalServerError && !includeDetails
+                ? "An unexpected error occurred."
+                : exception.Message,
             Instance = context.Request.Path
         };
 

@@ -1,48 +1,61 @@
-import {
-    BrowserRouter,
-    Route,
-    Routes,
-} from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-import LoginPage from "@/features/authentication/pages/LoginPage";
-import DashboardPage from "@/features/dashboard/pages/DashboardPage";
+import { ROUTES } from "@/constants/routes";
 
-import ProtectedRoute from "./ProtectedRoute";
-import PublicRoute from "./PublicRoute";
-
-import UnauthorizedPage from "@/pages/UnauthorizedPage";
+import LoginPage from "@/pages/auth/LoginPage";
+import DashboardPage from "@/pages/dashboard/DashboardPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 
-function AppRoutes() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route element={<PublicRoute />}>
-                    <Route
-                        path="/login"
-                        element={<LoginPage />}
-                    />
-                </Route>
+import MainLayout from "@/layouts/MainLayout";
+import ProtectedRoute from "@/components/layout/ProtectedRoute/ProtectedRoute";
 
-                <Route element={<ProtectedRoute />}>
+import EmployeeListPage from "@/pages/employees/EmployeeListPage";
+
+export default function AppRoutes() {
+    return (
+        <Routes>
+            <Route
+                path={ROUTES.ROOT}
+                element={
+                    <Navigate
+                        to={ROUTES.LOGIN}
+                        replace
+                    />
+                }
+            />
+
+            <Route
+                path={ROUTES.LOGIN}
+                element={<LoginPage />}
+            />
+
+            <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout />}>
                     <Route
-                        path="/"
+                        path={ROUTES.DASHBOARD}
                         element={<DashboardPage />}
                     />
                 </Route>
+            </Route>
 
-                <Route
-                    path="/unauthorized"
-                    element={<UnauthorizedPage />}
-                />
+            <Route
+                path={ROUTES.NOT_FOUND}
+                element={<NotFoundPage />}
+            />
 
-                <Route
-                    path="*"
-                    element={<NotFoundPage />}
-                />
-            </Routes>
-        </BrowserRouter>
+            <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout />}>
+                    <Route
+                        path={ROUTES.DASHBOARD}
+                        element={<DashboardPage />}
+                    />
+
+                    <Route
+                        path={ROUTES.EMPLOYEES}
+                        element={<EmployeeListPage />}
+                    />
+                </Route>
+            </Route>
+        </Routes>
     );
 }
-
-export default AppRoutes;

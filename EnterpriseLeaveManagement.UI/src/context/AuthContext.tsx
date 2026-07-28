@@ -1,69 +1,194 @@
+import type { PropsWithChildren } from "react";
 import {
     createContext,
     useContext,
-    useEffect,
     useMemo,
     useState,
-    type ReactNode,
 } from "react";
 
-import type { AuthUser } from "@/types";
+import type {
+    AuthState,
+    AuthUser,
+} from "@/types/auth";
 
-export interface AuthContextType {
-    user: AuthUser | null;
-    isAuthenticated: boolean;
-    login: (user: AuthUser) => void;
+import { tokenStorage } from "@/utils/tokenStorage";
+
+interface AuthContextType {
+    auth: AuthState;
+
+    login: (
+        accessToken: string,
+        refreshToken: string
+    ) => void;
+
     logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-    undefined
-);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-interface Props {
-    children: ReactNode;
+function decodeBase64Url(value: string): string {
+    const normalized = value
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+    const padding = normalized.length % 4;
+    const padded =
+        padding === 0
+            ? normalized
+            : normalized + "=".repeat(4 - padding);
+
+    return atob(padded);
 }
 
-const STORAGE_KEY = "auth";
+function parseJwtPayload(token: string): Record<string, unknown> | null {
+    const parts = token.split(".");
 
-export function AuthProvider({ children }: Props) {
-    const [user, setUser] = useState<AuthUser | null>(null);
+    if (parts.length < 2) {
+        return null;
+    }
 
-    useEffect(() => {
-        const stored = localStorage.getItem(STORAGE_KEY);
+    try {
+        const payload = decodeBase64Url(parts[1]);
+        return JSON.parse(payload) as Record<string, unknown>;
+    } catch {
+        return null;
+    }
+}
 
-        if (!stored) {
-            return;
+function getClaim(
+    payload: Record<string, unknown>,
+    keys: string[]
+): string {
+    for (const key of keys) {
+        const value = payload[key];
+
+        if (typeof value === "string" && value.trim().length > 0) {
+            return value;
+        }
+    }
+
+    return "";
+}
+
+function mapTokenToUser(accessToken: string): AuthUser | null {
+    const payload = parseJwtPayload(accessToken);
+
+    if (!payload) {
+        return null;
+    }
+
+    const roleClaim = payload[
+        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+    ];
+
+    const role = Array.isArray(roleClaim)
+        ? String(roleClaim[0] ?? "")
+        : String(roleClaim ?? payload.role ?? "");
+
+    const id = getClaim(payload, [
+        "sub",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+    ]);
+
+    const fullName = getClaim(payload, [
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
+        "unique_name",
+        "name",
+    ]);
+
+    const email = getClaim(payload, [
+        "email",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+    ]);
+
+    return {
+        id,
+        fullName: fullName || email || "User",
+        email,
+        role,
+    };
+}
+
+function createAuthStateFromStorage(): AuthState {
+    const accessToken = tokenStorage.getAccessToken();
+    const refreshToken = tokenStorage.getRefreshToken();
+
+    if (!accessToken || !refreshToken) {
+        return {
+            isAuthenticated: false,
+            accessToken: null,
+            refreshToken: null,
+            user: null,
+        };
+    }
+
+    const user = mapTokenToUser(accessToken);
+
+    if (!user) {
+        tokenStorage.clear();
+
+        return {
+            isAuthenticated: false,
+            accessToken: null,
+            refreshToken: null,
+            user: null,
+        };
+    }
+
+    return {
+        isAuthenticated: true,
+        accessToken,
+        refreshToken,
+        user,
+    };
+}
+
+export function AuthProvider({
+    children,
+}: PropsWithChildren) {
+    const [auth, setAuth] = useState<AuthState>(
+        createAuthStateFromStorage
+    );
+
+    const login = (
+        accessToken: string,
+        refreshToken: string
+    ) => {
+        const user = mapTokenToUser(accessToken);
+
+        if (!user) {
+            throw new Error("Unable to parse access token.");
         }
 
-        const auth = JSON.parse(stored) as AuthUser;
+        tokenStorage.setAccessToken(accessToken);
+        tokenStorage.setRefreshToken(refreshToken);
 
-        if (new Date(auth.expiresAt) <= new Date()) {
-            localStorage.removeItem(STORAGE_KEY);
-            return;
-        }
-
-        setUser(auth);
-    }, []);
-
-    const login = (user: AuthUser) => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-        setUser(user);
+        setAuth({
+            isAuthenticated: true,
+            accessToken,
+            refreshToken,
+            user,
+        });
     };
 
     const logout = () => {
-        localStorage.removeItem(STORAGE_KEY);
-        setUser(null);
+        tokenStorage.clear();
+
+        setAuth({
+            isAuthenticated: false,
+            accessToken: null,
+            refreshToken: null,
+            user: null,
+        });
     };
 
-    const value = useMemo<AuthContextType>(
+    const value = useMemo(
         () => ({
-            user,
-            isAuthenticated: user !== null,
+            auth,
             login,
             logout,
         }),
-        [user]
+        [auth]
     );
 
     return (
@@ -77,7 +202,9 @@ export function useAuth() {
     const context = useContext(AuthContext);
 
     if (!context) {
-        throw new Error("useAuth must be used within AuthProvider.");
+        throw new Error(
+            "useAuth must be used inside AuthProvider."
+        );
     }
 
     return context;
