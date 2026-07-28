@@ -1,4 +1,4 @@
-import api from "@/api/axios";
+import axiosClient from "@/api/axiosConfig";
 
 import type {
     EmployeeApiDto,
@@ -20,7 +20,7 @@ function mapEmployee(apiEmployee: EmployeeApiDto): Employee {
 const employeeService = {
     async getAll() {
         const response =
-            await api.get<PagedResult<EmployeeApiDto>>(
+            await axiosClient.get<PagedResult<EmployeeApiDto>>(
                 "/Employees"
             );
 

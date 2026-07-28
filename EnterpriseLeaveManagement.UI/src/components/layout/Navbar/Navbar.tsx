@@ -4,11 +4,18 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 import {
     AppBar,
+    Badge,
     Box,
+    Button,
     IconButton,
     Toolbar,
     Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
+import useAuth from "@/hooks/useAuth";
+import { useNotifications } from "@/hooks/useLeave";
+import { ROUTES } from "@/constants/routes";
 
 interface NavbarProps {
     onMenuClick?: () => void;
@@ -17,6 +24,15 @@ interface NavbarProps {
 export default function Navbar({
     onMenuClick,
 }: NavbarProps) {
+    const { auth, logout } = useAuth();
+    const { data: notifications = [] } =
+        useNotifications();
+    const navigate = useNavigate();
+
+    const unreadCount = notifications.filter(
+        (item) => !item.isRead
+    ).length;
+
     return (
         <AppBar
             position="fixed"
@@ -39,16 +55,46 @@ export default function Navbar({
                     Enterprise Leave Management
                 </Typography>
 
-                <IconButton color="inherit">
-                    <NotificationsNoneIcon />
+                <IconButton
+                    color="inherit"
+                    onClick={() =>
+                        navigate(ROUTES.PROFILE)
+                    }
+                >
+                    <Badge
+                        badgeContent={unreadCount}
+                        color="error"
+                    >
+                        <NotificationsNoneIcon />
+                    </Badge>
                 </IconButton>
 
                 <IconButton color="inherit">
                     <AccountCircleIcon />
                 </IconButton>
 
-                <Box sx={{ ml: 1 }}>
-                    Admin
+                <Box
+                    sx={{
+                        ml: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                    }}
+                >
+                    <Box>
+                        {auth.user?.fullName ?? "User"}
+                    </Box>
+                    <Button
+                        color="inherit"
+                        variant="outlined"
+                        size="small"
+                        onClick={() => {
+                            logout();
+                            navigate(ROUTES.LOGIN);
+                        }}
+                    >
+                        Logout
+                    </Button>
                 </Box>
             </Toolbar>
         </AppBar>

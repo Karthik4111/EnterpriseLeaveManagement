@@ -17,6 +17,10 @@ axiosClient.interceptors.response.use(
     async (error) => {
         if (error.response?.status === 401) {
             tokenStorage.clear();
+
+            if (window.location.pathname !== "/login") {
+                window.location.replace("/login");
+            }
         }
 
         return Promise.reject(error);

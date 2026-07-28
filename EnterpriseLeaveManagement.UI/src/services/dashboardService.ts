@@ -1,4 +1,5 @@
-import api from "@/api/axios";
+import axiosClient from "@/api/axiosConfig";
+import { API_ROUTES } from "@/constants/apiRoutes";
 
 export interface DashboardSummary {
 	totalEmployees: number;
@@ -13,8 +14,8 @@ export interface DashboardSummary {
 const dashboardService = {
 	async getSummary() {
 		const response =
-			await api.get<DashboardSummary>(
-				"/Dashboard/summary"
+			await axiosClient.get<DashboardSummary>(
+				API_ROUTES.DASHBOARD.SUMMARY
 			);
 
 		return response.data;
