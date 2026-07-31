@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog();
 
+
 // Register Application Layer
 builder.Services.AddApplication();
 
